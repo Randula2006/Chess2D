@@ -7,7 +7,8 @@ TARGET = chess2d
 SRC_DIR = src
 
 # Add new .c files here as you create them
-SRCS = $(SRC_DIR)/main.c
+SRCS = $(SRC_DIR)/main.c \
+       $(SRC_DIR)/board.c
 
 OBJS = $(SRCS:.c=.o)
 

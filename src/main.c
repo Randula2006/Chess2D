@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include "../include/board.h"
 
 
 int main(int argc, char* argv[]){
     SDL_Window * window = NULL;
     SDL_Renderer * renderer = NULL;
     SDL_Event event; 
+    Board board;
     int running = 1;
 
     int result = SDL_Init(SDL_INIT_VIDEO);
@@ -39,6 +41,8 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
+    /* Create the chess board with pieces in the memory */
+    initBoard(&board);
 
     while(running == 1){
         /* poll events */
