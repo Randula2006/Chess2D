@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include "../include/board.h"
+#include "../include/render.h"
 
 
 int main(int argc, char* argv[]){
@@ -19,7 +20,7 @@ int main(int argc, char* argv[]){
     }
 
     window = SDL_CreateWindow(
-        "CHess 2D",
+        "Chess 2D",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         800,
@@ -54,6 +55,9 @@ int main(int argc, char* argv[]){
 
         SDL_SetRenderDrawColor(renderer, 20, 80, 20, 255);
         SDL_RenderClear(renderer);
+
+        /* render the checkerboard pattern on the window*/
+        render_board(renderer, &board);
 
         SDL_RenderPresent(renderer);
     }
