@@ -2,19 +2,19 @@
 #define PIECE_H
 
 typedef enum{
-    Pawn,
-    Knight,
-    Bishop,
-    Rook,
-    Queen,
-    King,
-    empty
+    PAWN,
+    KNIGHT,
+    BISHOP,
+    ROOK,
+    QUEEN,
+    KING,
+    EMPTY
 }PieceType;
 
 typedef enum{
-    Black,
-    White,
-    empty
+    BLACK,
+    WHITE,
+    NONE
 }PieceColor;
 
 
