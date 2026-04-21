@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include "../include/board.h"
+#include "../include/render.h"
 
 
 int main(int argc, char* argv[]){
     SDL_Window * window = NULL;
     SDL_Renderer * renderer = NULL;
+    Textures textures;
     SDL_Event event; 
+    Board board;
     int running = 1;
 
     int result = SDL_Init(SDL_INIT_VIDEO);
@@ -16,8 +21,15 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
+    result = IMG_Init(IMG_INIT_PNG);
+    if (!(result & IMG_INIT_PNG))
+    { // if PNG was NOT successfully initialized
+        printf("%s\n", IMG_GetError());
+        return 1;
+    }
+
     window = SDL_CreateWindow(
-        "CHess 2D",
+        "Chess 2D",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         800,
@@ -39,6 +51,11 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
+    /* Create the chess board with pieces in the memory */
+    initBoard(&board);
+
+    /* loading pieces into the memory */
+    load_pieces(renderer, &textures);
 
     while(running == 1){
         /* poll events */
@@ -51,12 +68,17 @@ int main(int argc, char* argv[]){
         SDL_SetRenderDrawColor(renderer, 20, 80, 20, 255);
         SDL_RenderClear(renderer);
 
+        /* render the checkerboard pattern on the window*/
+        render_board(renderer, &board);
+        render_pieces(&board, &textures, renderer);
+
         SDL_RenderPresent(renderer);
     }
 
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
 
     return 0;
