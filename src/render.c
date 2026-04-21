@@ -1,4 +1,4 @@
-
+#include <SDL2/SDL_image.h>
 #include "../include/render.h"
 
 
@@ -19,7 +19,7 @@ void render_board(SDL_Renderer* renderer, Board* board){
             /* starts from 1 and not from 0 */
             /* Black */
             if(((row + col) % 2) == 1){
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255);
                 SDL_RenderFillRect(renderer, &fillRect);
 
             }else{ /* White */
