@@ -19,6 +19,9 @@ typedef struct{
 
 
 void getMoves(Board * board, int row, int col, MoveList * list);
+void KingMovement(Board *board , MoveList * list, int row, int col);
+void RookMovement(Board *board , MoveList * list, int row, int col);
+void movePiece(Board * board, MoveList * list, int row, int col, int i, int j); 
 
 
 #endif
