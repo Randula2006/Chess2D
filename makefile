@@ -9,7 +9,8 @@ SRC_DIR = src
 # Add new .c files here as you create them
 SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/board.c \
-       $(SRC_DIR)/render.c
+       $(SRC_DIR)/render.c \
+	   $(SRC_DIR)/input.c \
 
 OBJS = $(SRCS:.c=.o)
 
