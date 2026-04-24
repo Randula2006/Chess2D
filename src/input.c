@@ -8,7 +8,7 @@ void HandleInput(SDL_Event * event, GameState * state){
 
     if(event->type == SDL_MOUSEBUTTONDOWN){
         if(event->button.button == SDL_BUTTON_LEFT){
-            printf("Left mouse clicked");
+            /* printf("Left mouse clicked\n"); */
             x = event->button.x;
             y = event->button.y;
 

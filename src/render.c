@@ -108,7 +108,7 @@ void render_selection(SDL_Renderer * renderer, GameState * state){
 
     if(state->selectedRow != -1){
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer, 255, 234, 0, 128);
+        SDL_SetRenderDrawColor(renderer, 255, 234, 0, 110);
 
         x = (state->selectedCol - 1) * BLOCK_SIZE;
         y = (state->selectedRow - 1) * BLOCK_SIZE;  
