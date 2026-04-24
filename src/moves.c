@@ -105,7 +105,7 @@ void BishopMovement(Board *board , MoveList * list, int row, int col){
 
     /* get valid moves for Up-right direction */
     while(i < BOARD_SIZE){
-        if((row - i) < 1 && (col + i) > 8) break;
+        if((row - i) < 1 || (col + i) > 8) break;
         if(board->squares[row - i][col + i].pieceType != EMPTY){
             if(board->squares[row - i][col + i].color != board->squares[row][col].color){
                 movePiece(board, list, row, col, -i, +i);
@@ -120,7 +120,7 @@ void BishopMovement(Board *board , MoveList * list, int row, int col){
     /* get valid moves for down-right direction */
     i = 1;
     while(i < BOARD_SIZE){
-        if((row + i) > 8 && (col + i) > 8) break;
+        if((row + i) > 8 || (col + i) > 8) break;
         if(board->squares[row + i][col + i].pieceType != EMPTY){
             if(board->squares[row + i][col + i].color != board->squares[row][col].color){
                 movePiece(board, list, row, col, +i, +i);
@@ -135,7 +135,7 @@ void BishopMovement(Board *board , MoveList * list, int row, int col){
     /* get valid moves for down-left direction */
     i = 1;
     while(i < BOARD_SIZE){
-        if((row + i) > 8 && (col - i) > 1) break;
+        if((row + i) > 8 || (col - i) < 1) break;
         if(board->squares[row + i][col - i].pieceType != EMPTY){
             if(board->squares[row + i][col - i].color != board->squares[row][col].color){
                 movePiece(board, list, row, col, +i, -i);
@@ -151,15 +151,15 @@ void BishopMovement(Board *board , MoveList * list, int row, int col){
     /* get valid moves for up-left direction */
     i = 1;
     while(i < BOARD_SIZE){
-        if((row + i) > 8 && (col -i) < 1) break;
-        if(board->squares[row + i][col - i].pieceType != EMPTY){
-            if(board->squares[row + i][col - i].color != board->squares[row][col].color){
-                movePiece(board, list, row, col, +i, -i);
+        if((row - i) < 1 || (col -i) < 1) break;
+        if(board->squares[row - i][col - i].pieceType != EMPTY){
+            if(board->squares[row - i][col - i].color != board->squares[row][col].color){
+                movePiece(board, list, row, col, -i, -i);
             }
             break;
         }
-        
-        movePiece(board, list, row, col, +i, -i);
+
+        movePiece(board, list, row, col, -i, -i);
         i++;
     } 
 
