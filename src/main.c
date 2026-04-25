@@ -3,6 +3,8 @@
 #include <SDL2/SDL_image.h>
 #include "../include/board.h"
 #include "../include/render.h"
+#include "../include/input.h"
+#include "../include/moves.h"
 
 
 int main(int argc, char* argv[]){
@@ -11,6 +13,7 @@ int main(int argc, char* argv[]){
     Textures textures;
     SDL_Event event; 
     Board board;
+    GameState state;
     int running = 1;
 
     int result = SDL_Init(SDL_INIT_VIDEO);
@@ -57,20 +60,30 @@ int main(int argc, char* argv[]){
     /* loading pieces into the memory */
     load_pieces(renderer, &textures);
 
+    state.selectedRow = -1;
+    state.selectedCol = -1;
+
     while(running == 1){
         /* poll events */
         while (SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
                 running = 0;
             }
+
+            /* Handle user input*/
+            HandleInput(&event, &state, &board);
         }
 
         SDL_SetRenderDrawColor(renderer, 20, 80, 20, 255);
         SDL_RenderClear(renderer);
 
-        /* render the checkerboard pattern on the window*/
+        /* render the checkerboard pattern and pieces on the window*/
         render_board(renderer, &board);
         render_pieces(&board, &textures, renderer);
+
+        /* render user selected square from handleInput */
+        render_selection(renderer, &state);
+        render_moves(renderer, &state.availableMoves);
 
         SDL_RenderPresent(renderer);
     }

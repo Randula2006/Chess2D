@@ -1,6 +1,6 @@
 #include <SDL2/SDL_image.h>
 #include "../include/render.h"
-
+#include "../include/moves.h"
 
 
 void render_board(SDL_Renderer* renderer, Board* board){
@@ -101,3 +101,38 @@ void render_pieces(Board * board, Textures * textures, SDL_Renderer* renderer){
         }
     }
 }
+
+
+void render_selection(SDL_Renderer * renderer, GameState * state){
+    int x,y;
+
+    if(state->selectedRow != -1){
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, 255, 234, 0, 110);
+
+        x = (state->selectedCol - 1) * BLOCK_SIZE;
+        y = (state->selectedRow - 1) * BLOCK_SIZE;  
+
+        SDL_Rect rect = (SDL_Rect){x, y, BLOCK_SIZE, BLOCK_SIZE };
+        SDL_RenderFillRect(renderer, &rect);
+    }
+}
+
+void render_moves(SDL_Renderer * renderer, MoveList * list){
+    int i, x, y;
+    
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    for(i = 0; i < list->count ; i++){
+
+        SDL_SetRenderDrawColor(renderer, 255, 234, 0, 110);
+
+        x = (list->moves[i].targetCol -1) * BLOCK_SIZE;
+        y = (list->moves[i].targetRow -1) * BLOCK_SIZE;  
+
+        SDL_Rect rect = (SDL_Rect){x, y, BLOCK_SIZE, BLOCK_SIZE };
+        SDL_RenderFillRect(renderer, &rect);
+    }
+}
+
+
+

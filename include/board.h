@@ -13,5 +13,4 @@ typedef struct{
 void initBoard(Board * board);
 void initPieces(Board * board);
 
-
 #endif
