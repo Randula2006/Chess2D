@@ -4,10 +4,16 @@
 
 
 void getMoves(Board * board, int row, int col, MoveList * list){
+    list->count = 0;
     if(board->squares[row][col].pieceType == KING){
         KingMovement(board, list, row, col);
     }else if (board->squares[row][col].pieceType == ROOK){
+        RookMovement(board, list, row, col);
+    }else if(board->squares[row][col].pieceType == BISHOP){
+        BishopMovement(board, list, row, col);
+    }else if(board->squares[row][col].pieceType == QUEEN){
         RookMovement(board, lsit, row, col);
+        BishopMovement(bishop, list, row, col);
     }
 
 }
@@ -15,7 +21,6 @@ void getMoves(Board * board, int row, int col, MoveList * list){
 
 void KingMovement(Board * board, MoveList * list, int row, int col){
     int i, j;
-    list->count = 0;
 
     /* get all valid moves */
     for(i = -1; i <= 1; i++){
@@ -163,6 +168,35 @@ void BishopMovement(Board *board , MoveList * list, int row, int col){
         i++;
     } 
 
+
+}
+
+void KnightMovement(Board *board , MoveList * list, int row, int col){
+    int i;
+    int offsets[8][2] = {
+        {-2, -1},
+        {-2, +1},
+        {-1, -2},
+        {-1, +2},
+        {+1, -2},
+        {+1, +2},
+        {+2, -1},
+        {+2, +1}
+    };
+
+    
+    for(i = 0; i < 8; i++){
+            if ( row + offsets[i][0] < 1 || row + offsets[i][0] > 8 || col + offsets[i][1] < 1 || col + offsets[i][1] > 8) continue;
+            if (board->squares[row + offsets[i][0] ][col + offsets[i][1]].pieceType != EMPTY){
+                if (board->squares[row + offsets[i][0]][col + offsets[i][1]].color != board->squares[row][col].color){
+                    movePiece(board, list, row, col, offsets[i][0], offsets[i][1]);
+                }
+                continue;
+            }
+
+            movePiece(board, list, row, col, offsets[i][0], offsets[i][1]);
+            
+    }
 
 }
 
