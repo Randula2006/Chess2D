@@ -10,7 +10,8 @@ SRC_DIR = src
 SRCS = $(SRC_DIR)/main.c \
        $(SRC_DIR)/board.c \
        $(SRC_DIR)/render.c \
-	   $(SRC_DIR)/input.c \
+       $(SRC_DIR)/input.c \
+       $(SRC_DIR)/moves.c
 
 OBJS = $(SRCS:.c=.o)
 

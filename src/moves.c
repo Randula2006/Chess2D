@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "moves.h"
+#include "../include/moves.h"
 #include "../include/board.h"
 
 
@@ -12,7 +12,7 @@ void getMoves(Board * board, int row, int col, MoveList * list){
     }else if(board->squares[row][col].pieceType == BISHOP){
         BishopMovement(board, list, row, col);
     }else if(board->squares[row][col].pieceType == QUEEN){
-        RookMovement(board, lsit, row, col);
+        RookMovement(board, list, row, col);
         BishopMovement(board, list, row, col);
     }else if(board->squares[row][col].pieceType == KNIGHT){
         KnightMovement(board, list, row, col);

@@ -4,6 +4,7 @@
 #include "../include/board.h"
 #include "../include/render.h"
 #include "../include/input.h"
+#include "../include/moves.h"
 
 
 int main(int argc, char* argv[]){
@@ -70,7 +71,7 @@ int main(int argc, char* argv[]){
             }
 
             /* Handle user input*/
-            HandleInput(&event, &state);
+            HandleInput(&event, &state, &board);
         }
 
         SDL_SetRenderDrawColor(renderer, 20, 80, 20, 255);
@@ -82,6 +83,7 @@ int main(int argc, char* argv[]){
 
         /* render user selected square from handleInput */
         render_selection(renderer, &state);
+        render_moves(renderer, &state.availableMoves);
 
         SDL_RenderPresent(renderer);
     }

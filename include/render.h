@@ -16,5 +16,6 @@ void render_board(SDL_Renderer* renderer, Board* board);
 void load_pieces(SDL_Renderer* renderer, Textures * textures);
 void render_pieces(Board * board, Textures * textures, SDL_Renderer* renderer);
 void render_selection(SDL_Renderer * renderer, GameState * state);
+void render_moves(SDL_Renderer * renderer, MoveList * list);
 
 #endif
