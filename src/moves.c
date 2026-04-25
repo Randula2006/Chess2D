@@ -13,7 +13,11 @@ void getMoves(Board * board, int row, int col, MoveList * list){
         BishopMovement(board, list, row, col);
     }else if(board->squares[row][col].pieceType == QUEEN){
         RookMovement(board, lsit, row, col);
-        BishopMovement(bishop, list, row, col);
+        BishopMovement(board, list, row, col);
+    }else if(board->squares[row][col].pieceType == KNIGHT){
+        KnightMovement(board, list, row, col);
+    }else if(board->squares[row][col].pieceType == PAWN){
+        PawnMovement(board, list, row, col);
     }
 
 }
@@ -203,26 +207,58 @@ void KnightMovement(Board *board , MoveList * list, int row, int col){
 void PawnMovement(Board *board , MoveList * list, int row, int col){
     /* Black Pawn movement - rows increases */ 
     if(board->squares[row][col].color == BLACK){
-        
-        if(board->squares[row + 1][col].pieceType != EMPTY) break;
 
-        if(row == 2 && board->squares[row + 1][col].pieceType == EMPTY && board->squares[row+2][col].pieceType == EMPTY){
+        if(row + 1 > 8) return;
+        if(board->squares[row + 1][col].pieceType != EMPTY) return;
+        movePiece(board, list, row, col, +1, 0);
+
+        /* First Move */
+        if(row == 2 && board->squares[row+2][col].pieceType == EMPTY){
             movePiece(board, list, row, col, +2, 0);
         }
 
-        movePiece(board, list, row, col, +1, 0);
+        /* capture piece to right */
+        if((col+1) < BOARD_SIZE && 
+           board->squares[row + 1][col + 1].pieceType != EMPTY && 
+           board->squares[row + 1][col + 1].color != BLACK ){
+            movePiece(board, list, row, col, +1, +1);
+           }
+        
+        /* capture piece to left */
+        if((col-1) >= 1 &&
+           board->squares[row + 1][col - 1].pieceType != EMPTY && 
+           board->squares[row + 1][col - 1].color != BLACK ){
+            movePiece(board, list, row, col, +1, -1);
+           }
+        
+
     }
 
     /* White Pawn Movement - Rows decreases */
     if(board->squares[row][col].color == WHITE){
-        
-        if(board->squares[row - 1][col].pieceType != EMPTY) break;
 
-        if(row == 7 && board->squares[row - 1][col].pieceType == EMPTY && board->squares[row-2][col].pieceType == EMPTY){
+        if(row - 1 < 1) return;
+        if(board->squares[row - 1][col].pieceType != EMPTY) return;
+        movePiece(board, list, row, col, -1, 0);
+
+        /* First Move */
+        if(row == 7 && board->squares[row-2][col].pieceType == EMPTY){
             movePiece(board, list, row, col, -2, 0);
         }
 
-        movePiece(board, list, row, col, -1, 0);
+        /* capture piece to right */
+        if((col+1) < BOARD_SIZE &&
+           board->squares[row - 1][col + 1].pieceType != EMPTY && 
+           board->squares[row - 1][col + 1].color != WHITE ){
+            movePiece(board, list, row, col, -1, +1);
+           }
+        
+        /* capture piece to left */
+        if((col-1) >= 1 &&
+           board->squares[row - 1][col - 1].pieceType != EMPTY && 
+           board->squares[row - 1][col - 1].color != WHITE ){
+            movePiece(board, list, row, col, -1, -1);
+           }
     }
 }
 
