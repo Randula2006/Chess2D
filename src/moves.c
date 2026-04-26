@@ -18,8 +18,6 @@ void getMoves(Board * board, int row, int col, MoveList * list){
         KnightMovement(board, list, row, col);
     }else if(board->squares[row][col].pieceType == PAWN){
         PawnMovement(board, list, row, col);
-    }else{
-        printf("Error: getMoves in moves.c; piece selection error");
     }
 
 }
