@@ -209,12 +209,13 @@ void PawnMovement(Board *board , MoveList * list, int row, int col){
     if(board->squares[row][col].color == BLACK){
 
         if(row + 1 > 8) return;
-        if(board->squares[row + 1][col].pieceType != EMPTY) return;
-        movePiece(board, list, row, col, +1, 0);
+        if(board->squares[row + 1][col].pieceType == EMPTY){
+            movePiece(board, list, row, col, +1, 0);
 
-        /* First Move */
-        if(row == 2 && board->squares[row+2][col].pieceType == EMPTY){
-            movePiece(board, list, row, col, +2, 0);
+            /* Double move from starting row */
+            if(row == 2 && board->squares[row+2][col].pieceType == EMPTY){
+                movePiece(board, list, row, col, +2, 0);
+            }
         }
 
         /* capture piece to right */
@@ -238,13 +239,15 @@ void PawnMovement(Board *board , MoveList * list, int row, int col){
     if(board->squares[row][col].color == WHITE){
 
         if(row - 1 < 1) return;
-        if(board->squares[row - 1][col].pieceType != EMPTY) return;
-        movePiece(board, list, row, col, -1, 0);
+        if(board->squares[row - 1][col].pieceType == EMPTY){
+            movePiece(board, list, row, col, -1, 0);
 
-        /* First Move */
-        if(row == 7 && board->squares[row-2][col].pieceType == EMPTY){
-            movePiece(board, list, row, col, -2, 0);
+            /* First Move */
+            if (row == 7 && board->squares[row - 2][col].pieceType == EMPTY){
+                movePiece(board, list, row, col, -2, 0);
+            }
         }
+
 
         /* capture piece to right */
         if((col+1) < BOARD_SIZE &&

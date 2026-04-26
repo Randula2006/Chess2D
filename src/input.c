@@ -60,6 +60,9 @@ int isValidMove(MoveList * list, int row, int col){
 
 
 void applyMove(Board* board, Move* move){
+      /*  printf("Moving from %d,%d to %d,%d\n", 
+           move->currentRow, move->currentCol,
+           move->targetRow, move->targetCol); */
     board->squares[move->targetRow][move->targetCol] = board->squares[move->currentRow][move->currentCol];
 
     /*Empty the original Squares */
