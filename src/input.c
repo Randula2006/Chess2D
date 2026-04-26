@@ -7,6 +7,7 @@
 
 void HandleInput(SDL_Event * event, GameState * state, Board * board){
     int isValidSelection;
+    int newRow, newCol;
 
     if(event->type == SDL_MOUSEBUTTONDOWN){
         if(event->button.button == SDL_BUTTON_LEFT){
@@ -20,10 +21,18 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
             
             }else{
 
-                isValidSelection = isValidMove(&state->availableMoves, state->selectedRow, state->selectedCol);
+                newRow = (event->button.y / 100) + 1;
+                newCol = (event->button.x / 100) + 1;
+                isValidSelection = isValidMove(&state->availableMoves, newRow, newCol);
                 
                 if(isValidSelection == 1){
-                    /* TODO: implement apply move function */
+                    Move move;
+                    move.currentRow = state->selectedRow;
+                    move.currentCol = state->selectedCol;
+                    move.targetRow = newRow;
+                    move.targetCol = newCol;
+
+                    applyMove(board, &move);
                     state->selectedRow = -1; /* Clears the selection */
                 
                 }else{
@@ -33,11 +42,7 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
 
                     getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves);
                 }
-            
-            
             }
-
-
         }
     }
 
@@ -53,3 +58,11 @@ int isValidMove(MoveList * list, int row, int col){
     return 0;
 }
 
+
+void applyMove(Board* board, Move* move){
+    board->squares[move->targetRow][move->targetCol] = board->squares[move->currentRow][move->currentCol];
+
+    /*Empty the original Squares */
+    board->squares[move->currentRow][move->currentCol].pieceType = EMPTY;
+    board->squares[move->currentRow][move->currentCol].color = NONE;
+}

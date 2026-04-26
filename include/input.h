@@ -13,5 +13,6 @@ typedef struct{
 
 void HandleInput(SDL_Event * event, GameState * state, Board * board);
 int isValidMove(MoveList * list, int row, int col);
+void applyMove(Board* board, Move* move);
 
 #endif
