@@ -62,7 +62,8 @@ int main(int argc, char* argv[]){
 
     state.selectedRow = -1;
     state.selectedCol = -1;
-
+    state.currentTurn = WHITE;
+    
     while(running == 1){
         /* poll events */
         while (SDL_PollEvent(&event)){

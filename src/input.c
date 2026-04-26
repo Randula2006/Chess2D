@@ -17,6 +17,11 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                 state->selectedRow = (event->button.y / 100) + 1;
                 state->selectedCol = (event->button.x / 100) + 1;
 
+                if (board->squares[state->selectedRow][state->selectedCol].color != state->currentTurn){
+                    state->selectedRow = -1; /* reject selection */
+                    return;
+                }
+
                 getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves);
             
             }else{
@@ -25,7 +30,7 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                 newCol = (event->button.x / 100) + 1;
                 isValidSelection = isValidMove(&state->availableMoves, newRow, newCol);
                 
-                if(isValidSelection == 1){
+                if(isValidSelection == 1){                    
                     Move move;
                     move.currentRow = state->selectedRow;
                     move.currentCol = state->selectedCol;
@@ -34,7 +39,13 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
 
                     applyMove(board, &move);
                     state->selectedRow = -1; /* Clears the selection */
-                
+                    
+                    if(state->currentTurn == WHITE){
+                        state->currentTurn = BLACK;
+                    }else{
+                        state->currentTurn = WHITE;
+                    }
+
                 }else{
                     /* consider as a new selection */
                     state->selectedRow = (event->button.y / 100) + 1;

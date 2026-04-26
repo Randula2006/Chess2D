@@ -8,6 +8,7 @@ typedef struct{
     int selectedRow;
     int selectedCol;
     MoveList availableMoves;
+    PieceColor currentTurn;
 }GameState;
 
 
