@@ -45,7 +45,6 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
-
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if(renderer == NULL){
         printf("%s\n", SDL_GetError());
@@ -63,6 +62,7 @@ int main(int argc, char* argv[]){
     state.selectedRow = -1;
     state.selectedCol = -1;
     state.currentTurn = WHITE;
+    state.availableMoves.count = 0;
     
     while(running == 1){
         /* poll events */
@@ -75,17 +75,25 @@ int main(int argc, char* argv[]){
             HandleInput(&event, &state, &board);
         }
 
+        // printf("A. RenderClear\n"); fflush(stdout);
         SDL_SetRenderDrawColor(renderer, 20, 80, 20, 255);
         SDL_RenderClear(renderer);
 
+        // printf("B. render_board\n"); fflush(stdout);
         /* render the checkerboard pattern and pieces on the window*/
         render_board(renderer, &board);
+
+        // printf("C. render_pieces\n"); fflush(stdout);
         render_pieces(&board, &textures, renderer);
 
+        // printf("D. render_selection\n"); fflush(stdout);
         /* render user selected square from handleInput */
         render_selection(renderer, &state);
+
+        // printf("E. render_moves\n"); fflush(stdout);
         render_moves(renderer, &state.availableMoves);
 
+        // printf("F. RenderPresent\n"); fflush(stdout);
         SDL_RenderPresent(renderer);
     }
 

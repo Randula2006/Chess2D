@@ -48,8 +48,15 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
 
                 }else{
                     /* consider as a new selection */
-                    state->selectedRow = (event->button.y / 100) + 1;
-                    state->selectedCol = (event->button.x / 100) + 1;
+                    newRow = (event->button.y / 100) + 1;
+                    newCol = (event->button.x / 100) + 1;
+
+                    if (board->squares[newRow][newCol].color != state->currentTurn){
+                        state->selectedRow = -1; /* deselect */
+                        return;
+                    }
+                    state->selectedRow = newRow;
+                    state->selectedCol = newCol;
 
                     getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves);
                 }

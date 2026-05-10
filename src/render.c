@@ -23,7 +23,7 @@ void render_board(SDL_Renderer* renderer, Board* board){
                 SDL_RenderFillRect(renderer, &fillRect);
 
             }else{ /* White */
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_SetRenderDrawColor(renderer, 238, 238, 255, 255);
                 SDL_RenderFillRect(renderer, &fillRect);
             }
 
@@ -120,7 +120,8 @@ void render_selection(SDL_Renderer * renderer, GameState * state){
 
 void render_moves(SDL_Renderer * renderer, MoveList * list){
     int i, x, y;
-    
+    if(list->count <= 0) return;
+
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     for(i = 0; i < list->count ; i++){
 
