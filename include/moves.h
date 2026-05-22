@@ -25,6 +25,6 @@ void BishopMovement(Board *board , MoveList * list, int row, int col);
 void KnightMovement(Board *board , MoveList * list, int row, int col);
 void PawnMovement(Board *board , MoveList * list, int row, int col);
 void movePiece(Board * board, MoveList * list, int row, int col, int i, int j); 
-
+int isInCheck(Board *board, PieceColor color);
 
 #endif

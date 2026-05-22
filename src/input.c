@@ -38,6 +38,18 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                     move.targetCol = newCol;
 
                     applyMove(board, &move);
+
+                    //Testing King check cases
+                    /*
+                    if (isInCheck(board, WHITE)){
+                        printf("White king is in check!\n");
+                        fflush(stdout);
+                    }
+                    if (isInCheck(board, BLACK)){
+                        printf("Black king is in check!\n");
+                        fflush(stdout);
+                    }
+                    */
                     state->selectedRow = -1; /* Clears the selection */
                     
                     if(state->currentTurn == WHITE){

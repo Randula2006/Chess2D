@@ -272,3 +272,51 @@ void movePiece(Board * board, MoveList * list, int row, int col, int i, int j){
         list->moves[list->count].targetCol = col + j;
         list->count++;
 }
+
+
+int isInCheck(Board *board, PieceColor color){
+    int currentRow = -1, currentCol = -1;
+    int r, c, i, j, k;
+    PieceColor enemy;
+
+    /* Find the king of the given color */
+    for(r = 1; r < BOARD_SIZE; r++){
+        for(c = 1; c < BOARD_SIZE; c++){
+            if(board->squares[r][c].pieceType == KING &&
+               board->squares[r][c].color == color){
+                currentRow = r;
+                currentCol = c;
+            }
+        }
+    }
+
+    /* If king not found, something is wrong */
+    if(currentRow == -1) return 0;
+
+    /* Set the enemy color */
+    if(color == WHITE){
+        enemy = BLACK;
+    }else{
+        enemy = WHITE;
+    }
+
+    /* Loop all squares and generate enemy moves */
+    for(i = 1; i < BOARD_SIZE; i++){
+        for(j = 1; j < BOARD_SIZE; j++){
+            if(board->squares[i][j].color == enemy){
+                MoveList list;
+                list.count = 0;
+                getMoves(board, i, j, &list);
+
+                for(k = 0; k < list.count; k++){
+                    if(list.moves[k].targetRow == currentRow &&
+                       list.moves[k].targetCol == currentCol){
+                        return 1; /* Check detected */
+                    }
+                }
+            }
+        }
+    }
+
+    return 0; /* No check */
+}
