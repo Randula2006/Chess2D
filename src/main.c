@@ -17,7 +17,6 @@ int main(int argc, char* argv[]){
     int running = 1;
 
     int result = SDL_Init(SDL_INIT_VIDEO);
-    
     if(result != 0){
         printf("%s\n", SDL_GetError());
         return 1;
@@ -26,6 +25,18 @@ int main(int argc, char* argv[]){
     result = IMG_Init(IMG_INIT_PNG);
     if (!(result & IMG_INIT_PNG)){
         printf("%s\n", IMG_GetError());
+        return 1;
+    }
+
+    result = TTF_Init();
+    if (TTF_Init() != 0){
+        printf("%s\n", TTF_GetError());
+        return 1;
+    }
+
+    TTF_Font * font = TTF_OpenFont("assets/Bungee-Regular.ttf", 48);
+    if (font == NULL){
+        printf("%s\n", TTF_GetError());
         return 1;
     }
 
@@ -61,6 +72,7 @@ int main(int argc, char* argv[]){
     state.currentTurn = WHITE;
     state.availableMoves.count = 0;
     state.gameOver = 0;
+    state.winner = NONE;
     
     while(running == 1){
         while (SDL_PollEvent(&event)){
@@ -92,6 +104,7 @@ int main(int argc, char* argv[]){
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 

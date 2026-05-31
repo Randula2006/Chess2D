@@ -10,6 +10,7 @@ typedef struct{
     MoveList availableMoves;
     PieceColor currentTurn;
     int gameOver; /* 0 for active, 1 for game over */
+    PieceColor winner;
 }GameState;
 
 

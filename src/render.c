@@ -135,5 +135,44 @@ void render_moves(SDL_Renderer * renderer, MoveList * list){
     }
 }
 
+void render_gameover(SDL_Renderer * renderer, GameState * state, TTF_Font * font){
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Surface * surface;
+    SDL_Texture * texture;
+    SDL_Rect dstRect;
+    char * message;
+
+    if(state->gameOver == 0) return;
+
+    /* Dark transparent overlay over the whole board */
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 160);
+    SDL_Rect overlay = {0, 0, 800, 800};
+    SDL_RenderFillRect(renderer, &overlay);
+
+    /* Pick the right message */
+    if(state->winner == WHITE){
+        message = "Checkmate! White wins!";
+    }else if(state->winner == BLACK){
+        message = "Checkmate! Black wins!";
+    }else{
+        message = "Stalemate! Draw!";
+    }
+
+    /* Render the text */
+    surface = TTF_RenderText_Blended(font, message, white);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    /* Center the text on the board */
+    dstRect.w = surface->w;
+    dstRect.h = surface->h;
+    dstRect.x = (800 - surface->w) / 2;
+    dstRect.y = (800 - surface->h) / 2;
+
+    SDL_FreeSurface(surface);
+    SDL_RenderCopy(renderer, texture, NULL, &dstRect);
+    SDL_DestroyTexture(texture);
+}
+
 
 
