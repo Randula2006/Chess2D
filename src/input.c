@@ -141,6 +141,15 @@ void applyMove(Board* board, Move* move){
            move->targetRow, move->targetCol); */
     board->squares[move->targetRow][move->targetCol] = board->squares[move->currentRow][move->currentCol];
 
+    /* Pawn promotion */
+    if(board->squares[move->targetRow][move->targetCol].pieceType == PAWN){
+        if(board->squares[move->targetRow][move->targetCol].color == WHITE && move->targetRow == 1){
+            board->squares[move->targetRow][move->targetCol].pieceType = QUEEN;
+        }else if(board->squares[move->targetRow][move->targetCol].color == BLACK && move->targetRow == 8){
+            board->squares[move->targetRow][move->targetCol].pieceType = QUEEN;
+        }
+    }
+
     /*Empty the original Squares */
     board->squares[move->currentRow][move->currentCol].pieceType = EMPTY;
     board->squares[move->currentRow][move->currentCol].color = NONE;
