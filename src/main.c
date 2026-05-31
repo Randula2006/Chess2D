@@ -18,15 +18,13 @@ int main(int argc, char* argv[]){
 
     int result = SDL_Init(SDL_INIT_VIDEO);
     
-    /* If SDL init fils*/
     if(result != 0){
         printf("%s\n", SDL_GetError());
         return 1;
     }
 
     result = IMG_Init(IMG_INIT_PNG);
-    if (!(result & IMG_INIT_PNG))
-    { // if PNG was NOT successfully initialized
+    if (!(result & IMG_INIT_PNG)){
         printf("%s\n", IMG_GetError());
         return 1;
     }
@@ -39,7 +37,9 @@ int main(int argc, char* argv[]){
         800,
         SDL_WINDOW_SHOWN
     );
-    /* If create window fails*/
+
+    SDL_SetWindowResizable(window, SDL_FALSE);
+
     if(window == NULL){
         printf("%s\n", SDL_GetError());
         return 1;
@@ -53,51 +53,42 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
-    /* Create the chess board with pieces in the memory */
     initBoard(&board);
-
-    /* loading pieces into the memory */
     load_pieces(renderer, &textures);
 
     state.selectedRow = -1;
     state.selectedCol = -1;
     state.currentTurn = WHITE;
     state.availableMoves.count = 0;
-    state.gameOver = 0; /* game starts as active */
+    state.gameOver = 0;
     
     while(running == 1){
-        /* poll events */
         while (SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
                 running = 0;
             }
 
-            /* Handle user input*/
+            if(event.type == SDL_WINDOWEVENT){
+                if(event.window.event == SDL_WINDOWEVENT_RESIZED ||
+                   event.window.event == SDL_WINDOWEVENT_MAXIMIZED){
+                    SDL_SetWindowSize(window, 800, 800);
+                    SDL_RestoreWindow(window);
+                }
+            }
+
             HandleInput(&event, &state, &board);
         }
 
-        // printf("A. RenderClear\n"); fflush(stdout);
         SDL_SetRenderDrawColor(renderer, 20, 80, 20, 255);
         SDL_RenderClear(renderer);
 
-        // printf("B. render_board\n"); fflush(stdout);
-        /* render the checkerboard pattern and pieces on the window*/
         render_board(renderer, &board);
-
-        // printf("C. render_pieces\n"); fflush(stdout);
         render_pieces(&board, &textures, renderer);
-
-        // printf("D. render_selection\n"); fflush(stdout);
-        /* render user selected square from handleInput */
         render_selection(renderer, &state);
-
-        // printf("E. render_moves\n"); fflush(stdout);
         render_moves(renderer, &state.availableMoves);
 
-        // printf("F. RenderPresent\n"); fflush(stdout);
         SDL_RenderPresent(renderer);
     }
-
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
