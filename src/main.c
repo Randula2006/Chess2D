@@ -28,7 +28,6 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
-    result = TTF_Init();
     if (TTF_Init() != 0){
         printf("%s\n", TTF_GetError());
         return 1;
@@ -98,6 +97,7 @@ int main(int argc, char* argv[]){
         render_pieces(&board, &textures, renderer);
         render_selection(renderer, &state);
         render_moves(renderer, &state.availableMoves);
+        render_gameover(renderer, &state, font); 
 
         SDL_RenderPresent(renderer);
     }

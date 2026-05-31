@@ -74,14 +74,17 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                             state->gameOver = 1;
                             if (nextTurn == WHITE){
                                 printf("Checkmate! Black wins!\n");
+                                state->winner = BLACK;
                             }
                             else{
                                 printf("Checkmate! White wins!\n");
+                                state->winner = WHITE;
                             }
                             fflush(stdout);
                         }
                         else{
                             state->gameOver = 1;
+                            state->winner = NONE;
                             printf("Stalemate! It's a draw!\n");
                             fflush(stdout);
                         }
