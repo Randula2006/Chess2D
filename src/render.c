@@ -200,3 +200,27 @@ void render_check(SDL_Renderer * renderer, Board * board, GameState * state){
     }
 }
 
+void render_promotion(SDL_Renderer * renderer, GameState * state, Textures * textures){
+    int i;
+    SDL_Rect bgRect, pieceRect;
+    /* The four pieces the player can choose -- queen, rook, bishop, knight */
+    /* Index matches piece.h enum: KNIGHT=1, BISHOP=2, ROOK=3, QUEEN=4 */
+    int choices[4] = {QUEEN, ROOK, BISHOP, KNIGHT};
+    int color;
+
+    if(state->pendingPromotion == 0) return;
+
+    color = state->currentTurn;
+
+    /* Draw a dark background box in the center -- 4 squares wide, 1 square tall */
+    bgRect = (SDL_Rect){200, 350, 400, 100};
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 220);
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    /* Draw each piece image inside the box */
+    for(i = 0; i < 4; i++){
+        pieceRect = (SDL_Rect){200 + (i * 100), 350, BLOCK_SIZE, BLOCK_SIZE};
+        SDL_RenderCopy(renderer, textures->pieces[color][choices[i]], NULL, &pieceRect);
+    }
+}

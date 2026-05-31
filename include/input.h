@@ -11,6 +11,9 @@ typedef struct{
     PieceColor currentTurn;
     int gameOver; /* 0 for active, 1 for game over */
     PieceColor winner;
+    int pendingPromotion; /* 0 for no promotion, 1 for promotion pending */
+    int promotionRow;
+    int promotionCol;
 }GameState;
 
 

@@ -72,7 +72,10 @@ int main(int argc, char* argv[]){
     state.availableMoves.count = 0;
     state.gameOver = 0;
     state.winner = NONE;
-    
+    state.pendingPromotion = 0;
+    state.promotionRow = -1;
+    state.promotionCol = -1;
+
     while(running == 1){
         while (SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
@@ -97,6 +100,7 @@ int main(int argc, char* argv[]){
         render_pieces(&board, &textures, renderer);
         render_selection(renderer, &state);
         render_moves(renderer, &state.availableMoves);
+        render_promotion(renderer, &state, &textures);
         render_check(renderer, &board, font);
         render_gameover(renderer, &state, font); 
 
