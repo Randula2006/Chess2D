@@ -4,7 +4,7 @@
 
 [![Language: C99](https://img.shields.io/badge/Language-C99-00599C?style=for-the-badge)](https://en.cppreference.com/w/c/language)
 [![Renderer: SDL2](https://img.shields.io/badge/Renderer-SDL2-2B2E3A?style=for-the-badge)](https://www.libsdl.org/)
-[![Status: Early Build](https://img.shields.io/badge/Status-Early%20Build-2F7D32?style=for-the-badge)](#project-status)
+[![Status: Playable Prototype](https://img.shields.io/badge/Status-Playable%20Prototype-2F7D32?style=for-the-badge)](#project-status)
 [![Platform: WSL/Linux](https://img.shields.io/badge/Platform-WSL%20%2F%20Linux-4EAA25?style=for-the-badge)](#quick-start-wsllinux)
 
 ---
@@ -13,12 +13,12 @@
 
 Chess2D is a learning-driven and performance-conscious chess project focused on:
 
-- clean C architecture (modular source files, clear data flow)
-- deterministic game logic (move generation and rule validation)
-- responsive, minimal SDL2 rendering
-- an approachable path from prototype to full chess implementation
+- clean C architecture (separate board/input/render/moves modules)
+- deterministic game logic (move generation + legal move filtering)
+- minimal SDL2 rendering (board + pieces + highlights)
+- an approachable path from prototype to full rules-complete chess
 
-The current build opens an SDL window, runs a render loop, and handles quit events. The project is now ready to grow into board rendering, piece rendering, and legal move logic.
+The current build is already playable for local two-player chess: click a piece to see legal moves, then click a highlighted square to move. The game detects check, checkmate, and stalemate.
 
 ---
 
@@ -26,18 +26,35 @@ The current build opens an SDL window, runs a render loop, and handles quit even
 
 ### Implemented
 
-- SDL video subsystem initialization
-- 800x800 window creation
-- accelerated renderer with VSync
-- main event loop with `SDL_QUIT` handling
-- frame clear + present cycle
+- 800×800 fixed-size SDL window + renderer (VSync)
+- board representation + standard starting position
+- board rendering + PNG piece textures (one file per piece)
+- left-click selection + legal move highlighting
+- move generation for all piece types
+- legal move filtering (prevents moving into check)
+- check detection + in-check king highlight
+- checkmate + stalemate detection + game-over overlay
 
 ### In Progress (Next Milestones)
 
-- board model (`8x8` representation)
-- board and piece rendering
-- mouse input and square selection
-- legal move generation and game rules
+- special rules: castling, en passant, promotion
+- richer UI: move history, captured pieces, reset/new game
+- stricter rules/edge cases and correctness testing
+
+### Controls
+
+- Left click a piece (of the side to move) to select it
+- Legal destination squares highlight in yellow
+- Left click a highlighted square to move
+- Left click another own piece to change selection
+
+There are no keyboard controls yet.
+
+### Known Limitations
+
+- No castling, en passant, or promotion yet
+- No draw rules beyond stalemate (e.g., repetition, 50-move rule)
+- The window is forced back to 800×800 if you try to resize it
 
 ---
 
@@ -62,6 +79,8 @@ make
 make run
 ```
 
+Important: run from the repo root so asset paths like `assets/pawn-w.png` resolve correctly.
+
 ### 4. Clean build artifacts
 
 ```bash
@@ -76,7 +95,7 @@ make clean
 - SDL linker/compiler flags are resolved automatically through:
 	- `pkg-config --cflags sdl2 SDL2_image SDL2_ttf`
 	- `pkg-config --libs sdl2 SDL2_image SDL2_ttf`
-- Source entry point today: `src/main.c`
+- Source entry point: `src/main.c`
 
 ---
 
@@ -84,44 +103,27 @@ make clean
 
 ```text
 Chess2D/
-├── assets/                 # Textures, fonts, audio (currently empty)
-├── libs/                   # Vendored SDL-related libraries/headers
-├── src/
-│   └── main.c              # SDL app bootstrap + main loop
+├── assets/                 # Piece PNGs + font
+├── include/                # Project headers
+├── libs/                   # Vendored SDL-related headers/libs (not used by default Makefile)
+├── src/                    # Game code
 ├── makefile                # Build script for WSL/Linux
-├── testPhases.txt          # Development phase planning notes
-└── README.md               # Main project documentation
+├── testPhases.txt          # Planning notes
+└── README.md               # Project documentation
 ```
 
 ### Planned Internal Modules
 
-As the project grows, source files are expected to be separated by responsibility:
+Current and planned modules:
 
 - `board` for board state and initialization
-- `piece` for piece types/colors and helpers
-- `moves` for pseudo-legal move generation
-- `rules` for legal filtering/check/checkmate logic
+- `piece` for piece types/colors
+- `moves` for move generation + legality filtering + check detection
 - `render` for board/piece/highlight drawing
 - `input` for mouse interactions and turn actions
 
 ---
 
-## Runtime Flow
-
-```mermaid
-flowchart TD
-		A[SDL_Init] --> B[Create Window]
-		B --> C[Create Renderer]
-		C --> D{Running?}
-		D -->|Yes| E[Poll Events]
-		E --> F[Clear Frame]
-		F --> G[Present Frame]
-		G --> D
-		D -->|No| H[Destroy Renderer/Window]
-		H --> I[SDL_Quit]
-```
-
----
 
 ## Development Roadmap
 
@@ -134,32 +136,37 @@ flowchart TD
 
 - define `Piece`, `Color`, `PieceType`, and `Board`
 - initialize standard chess starting position
+- status: done
 
 ### Phase 3: Rendering
 
 - draw checkered board
 - load and render piece sprites
+- status: done
 
 ### Phase 4: Input and Selection
 
 - map mouse coordinates to board squares
 - selectable piece + highlighted destinations
+- status: done
 
 ### Phase 5: Move Generation
 
 - generate piece moves by type
 - add bounds checks, collisions, captures
+- status: in progress (special rules remain)
 
 ### Phase 6: Rule Validation
 
 - check detection
 - legal move filtering (prevent self-check)
+- status: done (baseline)
 
 ### Phase 7: Full Match Flow
 
 - turn switching
 - checkmate/stalemate detection
-- promotion handling
+- status: done (promotion not yet)
 
 ### Phase 8: Polish
 
@@ -205,10 +212,15 @@ sudo apt install -y build-essential
 - ensure you are using WSLg (Windows 11) or an X server setup
 - confirm graphical apps work by testing another simple SDL app
 
+### Pieces/fonts don’t load
+
+- make sure you run the executable from the repo root (`make run` does this)
+- verify the `assets/` files exist and are readable
+
 ---
 
 ## Current Goal
 
-Immediate target: render a full 8x8 board and display pieces from a sprite sheet while keeping the main loop stable and modular.
+Immediate target: fill in the missing chess rules (castling, en passant, promotion) and tighten correctness around check detection and edge cases.
 
-When this is complete, Chess2D transitions from platform setup to core gameplay development.
+When this is complete, Chess2D transitions from “playable prototype” to “rules-complete game”.
