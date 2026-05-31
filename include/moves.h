@@ -3,7 +3,7 @@
 
 #include "board.h"
 
-#define MAX_MOVES 28 /* max number = 27// +1 for safety */
+#define MAX_MOVES 64
 
 typedef struct{
     int currentRow;
@@ -26,5 +26,7 @@ void KnightMovement(Board *board , MoveList * list, int row, int col);
 void PawnMovement(Board *board , MoveList * list, int row, int col);
 void movePiece(Board * board, MoveList * list, int row, int col, int i, int j); 
 int isInCheck(Board *board, PieceColor color);
+void filterLegalMoves(Board * board, MoveList * list, PieceColor color);
+int hasAnyLegalMoves(Board * board, PieceColor color);
 
 #endif

@@ -63,6 +63,7 @@ int main(int argc, char* argv[]){
     state.selectedCol = -1;
     state.currentTurn = WHITE;
     state.availableMoves.count = 0;
+    state.gameOver = 0; /* game starts as active */
     
     while(running == 1){
         /* poll events */

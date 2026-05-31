@@ -9,6 +9,8 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
     int isValidSelection;
     int newRow, newCol;
 
+    if(state->gameOver == 1) return;
+
     if(event->type == SDL_MOUSEBUTTONDOWN){
         if(event->button.button == SDL_BUTTON_LEFT){
             /* printf("Left mouse clicked\n"); */
@@ -23,7 +25,12 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                 }
 
                 getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves);
-            
+
+                if (state->availableMoves.count == 0){
+                    state->selectedRow = -1;
+                    return;
+                }
+
             }else{
 
                 newRow = (event->button.y / 100) + 1;
@@ -50,14 +57,45 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                         fflush(stdout);
                     }
                     */
-                    state->selectedRow = -1; /* Clears the selection */
-                    
-                    if(state->currentTurn == WHITE){
-                        state->currentTurn = BLACK;
-                    }else{
-                        state->currentTurn = WHITE;
-                    }
+                    state->selectedRow = -1;
+                    state->availableMoves.count = 0;
 
+                    PieceColor nextTurn;
+                    if (state->currentTurn == WHITE){
+                        nextTurn = BLACK;
+                    }
+                    else{
+                        nextTurn = WHITE;
+                    }
+                    state->currentTurn = nextTurn;
+
+                    if (!hasAnyLegalMoves(board, nextTurn)){
+                        if (isInCheck(board, nextTurn)){
+                            state->gameOver = 1;
+                            if (nextTurn == WHITE){
+                                printf("Checkmate! Black wins!\n");
+                            }
+                            else{
+                                printf("Checkmate! White wins!\n");
+                            }
+                            fflush(stdout);
+                        }
+                        else{
+                            state->gameOver = 1;
+                            printf("Stalemate! It's a draw!\n");
+                            fflush(stdout);
+                        }
+                    }
+                    else if (isInCheck(board, nextTurn)){
+                        if (nextTurn == WHITE)
+                        {
+                            printf("White is in check!\n");
+                        }
+                        else{
+                            printf("Black is in check!\n");
+                        }
+                        fflush(stdout);
+                    }
                 }else{
                     /* consider as a new selection */
                     newRow = (event->button.y / 100) + 1;
@@ -71,6 +109,11 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                     state->selectedCol = newCol;
 
                     getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves);
+
+                    if (state->availableMoves.count == 0){
+                        state->selectedRow = -1;
+                        return;
+                    }
                 }
             }
         }

@@ -4,6 +4,8 @@
 
 
 void getMoves(Board * board, int row, int col, MoveList * list){
+    PieceColor color;
+
     list->count = 0;
     if(board->squares[row][col].pieceType == KING){
         KingMovement(board, list, row, col);
@@ -20,6 +22,8 @@ void getMoves(Board * board, int row, int col, MoveList * list){
         PawnMovement(board, list, row, col);
     }
 
+    color = board->squares[row][col].color;
+    filterLegalMoves(board, list, color);
 }
 
 
@@ -273,7 +277,6 @@ void movePiece(Board * board, MoveList * list, int row, int col, int i, int j){
         list->count++;
 }
 
-
 int isInCheck(Board *board, PieceColor color){
     int currentRow = -1, currentCol = -1;
     int r, c, i, j, k;
@@ -306,7 +309,26 @@ int isInCheck(Board *board, PieceColor color){
             if(board->squares[i][j].color == enemy){
                 MoveList list;
                 list.count = 0;
-                getMoves(board, i, j, &list);
+
+                if (board->squares[i][j].pieceType == KING){
+                    KingMovement(board, &list, i, j);
+                }
+                else if (board->squares[i][j].pieceType == ROOK){
+                    RookMovement(board, &list, i, j);
+                }
+                else if (board->squares[i][j].pieceType == BISHOP){
+                    BishopMovement(board, &list, i, j);
+                }
+                else if (board->squares[i][j].pieceType == QUEEN){
+                    RookMovement(board, &list, i, j);
+                    BishopMovement(board, &list, i, j);
+                }
+                else if (board->squares[i][j].pieceType == KNIGHT){
+                    KnightMovement(board, &list, i, j);
+                }
+                else if (board->squares[i][j].pieceType == PAWN){
+                    PawnMovement(board, &list, i, j);
+                }
 
                 for(k = 0; k < list.count; k++){
                     if(list.moves[k].targetRow == currentRow &&
@@ -319,4 +341,47 @@ int isInCheck(Board *board, PieceColor color){
     }
 
     return 0; /* No check */
+}
+
+void filterLegalMoves(Board * board, MoveList * list, PieceColor color){
+    int i;
+    MoveList filtered;
+    filtered.count = 0;
+
+    for(i = 0; i < list->count; i++){
+        Move * m = &list->moves[i];
+
+        Piece savedFrom = board->squares[m->currentRow][m->currentCol];
+        Piece savedTo   = board->squares[m->targetRow][m->targetCol];
+
+        board->squares[m->targetRow][m->targetCol]  = board->squares[m->currentRow][m->currentCol];
+        board->squares[m->currentRow][m->currentCol].pieceType = EMPTY;
+        board->squares[m->currentRow][m->currentCol].color     = NONE;
+
+        if(!isInCheck(board, color)){
+            filtered.moves[filtered.count] = *m;
+            filtered.count++;
+        }
+
+        board->squares[m->currentRow][m->currentCol] = savedFrom;
+        board->squares[m->targetRow][m->targetCol]   = savedTo;
+    }
+
+    *list = filtered;
+}
+
+int hasAnyLegalMoves(Board * board, PieceColor color){
+    int r, c;
+    MoveList list;
+
+    for(r = 1; r < BOARD_SIZE; r++){
+        for(c = 1; c < BOARD_SIZE; c++){
+            if(board->squares[r][c].color == color){
+                list.count = 0;
+                getMoves(board, r, c, &list);
+                if(list.count > 0) return 1;
+            }
+        }
+    }
+    return 0;
 }

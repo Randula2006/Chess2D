@@ -9,6 +9,7 @@ typedef struct{
     int selectedCol;
     MoveList availableMoves;
     PieceColor currentTurn;
+    int gameOver; /* 0 for active, 1 for game over */
 }GameState;
 
 
