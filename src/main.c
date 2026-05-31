@@ -40,7 +40,7 @@ int main(int argc, char* argv[]){
     }
 
     window = SDL_CreateWindow(
-        "Chess 2D",
+        "Chess 2D by Randula Gunathilake",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         800,
@@ -97,6 +97,7 @@ int main(int argc, char* argv[]){
         render_pieces(&board, &textures, renderer);
         render_selection(renderer, &state);
         render_moves(renderer, &state.availableMoves);
+        render_check(renderer, &board, font);
         render_gameover(renderer, &state, font); 
 
         SDL_RenderPresent(renderer);

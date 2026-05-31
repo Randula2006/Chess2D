@@ -174,5 +174,29 @@ void render_gameover(SDL_Renderer * renderer, GameState * state, TTF_Font * font
     SDL_DestroyTexture(texture);
 }
 
+void render_check(SDL_Renderer * renderer, Board * board, GameState * state){
+    int r, c, x, y;
 
+    if(state->gameOver == 1) return;
+
+    /* Find the current player's king and check if it is in check */
+    for(r = 1; r < BOARD_SIZE; r++){
+        for(c = 1; c < BOARD_SIZE; c++){
+            if(board->squares[r][c].pieceType == KING &&
+               board->squares[r][c].color == state->currentTurn){
+
+                if(isInCheck(board, state->currentTurn)){
+                    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 150);
+
+                    x = (c - 1) * BLOCK_SIZE;
+                    y = (r - 1) * BLOCK_SIZE;
+
+                    SDL_Rect rect = {x, y, BLOCK_SIZE, BLOCK_SIZE};
+                    SDL_RenderFillRect(renderer, &rect);
+                }
+            }
+        }
+    }
+}
 
