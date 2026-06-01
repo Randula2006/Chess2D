@@ -66,6 +66,7 @@ int main(int argc, char* argv[]){
     initBoard(&board);
     load_pieces(renderer, &textures);
 
+    /* Initilize values*/
     state.selectedRow = -1;
     state.selectedCol = -1;
     state.currentTurn = WHITE;
@@ -75,6 +76,8 @@ int main(int argc, char* argv[]){
     state.pendingPromotion = 0;
     state.promotionRow = -1;
     state.promotionCol = -1;
+    state.enPassantRow = -1;
+    state.enPassantCol = -1;
 
     while(running == 1){
         while (SDL_PollEvent(&event)){

@@ -3,7 +3,7 @@
 #include "../include/board.h"
 
 
-void getMoves(Board * board, int row, int col, MoveList * list){
+void getMoves(Board * board, int row, int col, MoveList * list, int epRow, int epCol){
     PieceColor color;
 
     list->count = 0;
@@ -19,7 +19,7 @@ void getMoves(Board * board, int row, int col, MoveList * list){
     }else if(board->squares[row][col].pieceType == KNIGHT){
         KnightMovement(board, list, row, col);
     }else if(board->squares[row][col].pieceType == PAWN){
-        PawnMovement(board, list, row, col);
+        PawnMovement(board, list, row, col, epRow, epCol);
     }
 
     color = board->squares[row][col].color;
@@ -208,7 +208,7 @@ void KnightMovement(Board *board , MoveList * list, int row, int col){
 
 }
 
-void PawnMovement(Board *board , MoveList * list, int row, int col){
+void PawnMovement(Board *board , MoveList * list, int row, int col, int epRow, int epCol){
     /* Black Pawn movement - rows increases */ 
     if(board->squares[row][col].color == BLACK){
 
@@ -235,8 +235,13 @@ void PawnMovement(Board *board , MoveList * list, int row, int col){
            board->squares[row + 1][col - 1].color != BLACK ){
             movePiece(board, list, row, col, +1, -1);
            }
-        
 
+           /* en passant for black */
+        if (epRow != -1 && row + 1 == epRow){
+               if ((col + 1 == epCol) || (col - 1 == epCol)){
+                   movePiece(board, list, row, col, +1, epCol - col);
+               }
+        }
     }
 
     /* White Pawn Movement - Rows decreases */
@@ -266,6 +271,13 @@ void PawnMovement(Board *board , MoveList * list, int row, int col){
            board->squares[row - 1][col - 1].color != WHITE ){
             movePiece(board, list, row, col, -1, -1);
            }
+
+        /* en passant for white */
+        if(epRow != -1 && row - 1 == epRow){
+            if((col + 1 == epCol) || (col - 1 == epCol)){
+                movePiece(board, list, row, col, -1, epCol - col);
+            }
+        }
     }
 }
 
@@ -327,7 +339,7 @@ int isInCheck(Board *board, PieceColor color){
                     KnightMovement(board, &list, i, j);
                 }
                 else if (board->squares[i][j].pieceType == PAWN){
-                    PawnMovement(board, &list, i, j);
+                    PawnMovement(board, &list, i, j, -1, -1);
                 }
 
                 for(k = 0; k < list.count; k++){
@@ -378,7 +390,7 @@ int hasAnyLegalMoves(Board * board, PieceColor color){
         for(c = 1; c < BOARD_SIZE; c++){
             if(board->squares[r][c].color == color){
                 list.count = 0;
-                getMoves(board, r, c, &list);
+                getMoves(board, r, c, &list, -1, -1);
                 if(list.count > 0) return 1;
             }
         }

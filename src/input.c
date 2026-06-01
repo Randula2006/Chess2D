@@ -1,6 +1,7 @@
 #include "../include/input.h"
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "../include/moves.h"
 #include "../include/board.h"
 
@@ -18,15 +19,13 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                 int clickX = event->button.x;
                 int clickY = event->button.y;
 
-                /* Check if click is inside the promotion box -- 200,350 to 600,450 */
                 if(clickX >= 200 && clickX <= 600 && clickY >= 350 && clickY <= 450){
-                    int index = (clickX - 200) / 100; /* 0=queen, 1=rook, 2=bishop, 3=knight */
+                    int index = (clickX - 200) / 100;
                     int choices[4] = {QUEEN, ROOK, BISHOP, KNIGHT};
 
                     board->squares[state->promotionRow][state->promotionCol].pieceType = choices[index];
                     state->pendingPromotion = 0;
 
-                    /* Switch turn after promotion */
                     PieceColor nextTurn;
                     if(state->currentTurn == WHITE){
                         nextTurn = BLACK;
@@ -35,7 +34,6 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                     }
                     state->currentTurn = nextTurn;
 
-                    /* Check for checkmate or stalemate after promotion */
                     if(!hasAnyLegalMoves(board, nextTurn)){
                         if(isInCheck(board, nextTurn)){
                             state->gameOver = 1;
@@ -72,7 +70,7 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                     return;
                 }
 
-                getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves);
+                getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves, state->enPassantRow, state->enPassantCol);
 
                 if(state->availableMoves.count == 0){
                     state->selectedRow = -1;
@@ -94,6 +92,25 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
 
                     applyMove(board, &move);
 
+                    /* If this was an en passant capture, remove the captured pawn */
+                    if(board->squares[move.targetRow][move.targetCol].pieceType == PAWN &&
+                       move.targetCol != move.currentCol &&
+                       move.targetRow == state->enPassantRow &&
+                       move.targetCol == state->enPassantCol){
+                        board->squares[move.currentRow][move.targetCol].pieceType = EMPTY;
+                        board->squares[move.currentRow][move.targetCol].color = NONE;
+                    }
+
+                    /* Set or clear en passant target for next turn */
+                    if(board->squares[move.targetRow][move.targetCol].pieceType == PAWN &&
+                       abs(move.targetRow - move.currentRow) == 2){
+                        state->enPassantRow = (move.currentRow + move.targetRow) / 2;
+                        state->enPassantCol = move.currentCol;
+                    }else{
+                        state->enPassantRow = -1;
+                        state->enPassantCol = -1;
+                    }
+
                     state->selectedRow = -1;
                     state->availableMoves.count = 0;
 
@@ -104,7 +121,7 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                             state->pendingPromotion = 1;
                             state->promotionRow = move.targetRow;
                             state->promotionCol = move.targetCol;
-                            return; /* Wait for player to pick a piece */
+                            return;
                         }
                     }
 
@@ -154,7 +171,7 @@ void HandleInput(SDL_Event * event, GameState * state, Board * board){
                     state->selectedRow = newRow;
                     state->selectedCol = newCol;
 
-                    getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves);
+                    getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves, state->enPassantRow, state->enPassantCol);
 
                     if(state->availableMoves.count == 0){
                         state->selectedRow = -1;

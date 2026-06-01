@@ -18,12 +18,12 @@ typedef struct{
 }MoveList;
 
 
-void getMoves(Board * board, int row, int col, MoveList * list);
+void getMoves(Board * board, int row, int col, MoveList * list, int epRow, int epCol);
 void KingMovement(Board *board , MoveList * list, int row, int col);
 void RookMovement(Board *board , MoveList * list, int row, int col);
 void BishopMovement(Board *board , MoveList * list, int row, int col);
 void KnightMovement(Board *board , MoveList * list, int row, int col);
-void PawnMovement(Board *board , MoveList * list, int row, int col);
+void PawnMovement(Board *board, MoveList * list, int row, int col, int epRow, int epCol);
 void movePiece(Board * board, MoveList * list, int row, int col, int i, int j); 
 int isInCheck(Board *board, PieceColor color);
 void filterLegalMoves(Board * board, MoveList * list, PieceColor color);
