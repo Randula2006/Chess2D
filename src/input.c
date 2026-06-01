@@ -72,7 +72,13 @@ void handleSelection(SDL_Event * event, GameState * state, Board * board){
         return;
     }
 
-    getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves, state->enPassantRow, state->enPassantCol);
+    int kingMoved  = (state->currentTurn == WHITE) ? state->whiteKingMoved  : state->blackKingMoved;
+    int rookAMoved = (state->currentTurn == WHITE) ? state->whiteRookAMoved : state->blackRookAMoved;
+    int rookHMoved = (state->currentTurn == WHITE) ? state->whiteRookHMoved : state->blackRookHMoved;
+
+
+    getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves,
+         state->enPassantRow, state->enPassantCol, kingMoved, rookAMoved, rookHMoved);
 
     if(state->availableMoves.count == 0){
         state->selectedRow = -1;
@@ -97,6 +103,31 @@ void handleMove(SDL_Event * event, GameState * state, Board * board){
         move.targetCol = newCol;
 
         applyMove(board, &move);
+
+        /* Check if the moved piece is King or either of the rooks. */
+        if(board->squares[move.targetRow][move.targetCol].pieceType == KING){
+            if(board->squares[move.targetRow][move.targetCol].color == WHITE){
+                state->whiteKingMoved = 1;
+            }else{
+                state->blackKingMoved = 1;
+            }
+        }
+
+        if(board->squares[move.targetRow][move.targetCol].pieceType == ROOK){
+            if(board->squares[move.targetRow][move.targetCol].color == WHITE){
+                if(move.currentRow == 8 && move.currentCol == 1){
+                    state->whiteRookAMoved = 1;
+                }else if(move.currentRow == 8 && move.currentCol == 8){
+                    state->whiteRookHMoved = 1;
+                }
+            }else{
+                if(move.currentRow == 1 && move.currentCol == 1){
+                    state->blackRookAMoved = 1;
+                }else if(move.currentRow == 1 && move.currentCol == 8){
+                    state->blackRookHMoved = 1;
+                }
+            }
+        }
 
         /* If this was an en passant capture, remove the captured pawn */
         if(board->squares[move.targetRow][move.targetCol].pieceType == PAWN &&
@@ -150,8 +181,15 @@ void handleMove(SDL_Event * event, GameState * state, Board * board){
         state->selectedRow = newRow;
         state->selectedCol = newCol;
 
-        getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves, state->enPassantRow, state->enPassantCol);
+        int kingMoved = (state->currentTurn == WHITE) ? state->whiteKingMoved : state->blackKingMoved;
+        int rookAMoved = (state->currentTurn == WHITE) ? state->whiteRookAMoved : state->blackRookAMoved;
+        int rookHMoved = (state->currentTurn == WHITE) ? state->whiteRookHMoved : state->blackRookHMoved;
 
+        getMoves(board, state->selectedRow, state->selectedCol, &state->availableMoves,
+                 state->enPassantRow, state->enPassantCol,
+                 kingMoved, rookAMoved, rookHMoved
+        );
+        
         if(state->availableMoves.count == 0){
             state->selectedRow = -1;
             return;
@@ -193,4 +231,20 @@ void applyMove(Board* board, Move* move){
 
     board->squares[move->currentRow][move->currentCol].pieceType = EMPTY;
     board->squares[move->currentRow][move->currentCol].color = NONE;
+
+    /* If king moved two squares it is castling -- also move the rook */
+    if(board->squares[move->targetRow][move->targetCol].pieceType == KING){
+        /* King side castling */
+        if(move->targetCol - move->currentCol == 2){
+            board->squares[move->targetRow][move->targetCol - 1] = board->squares[move->targetRow][8];
+            board->squares[move->targetRow][8].pieceType = EMPTY;
+            board->squares[move->targetRow][8].color = NONE;
+        }
+        /* Queen side castling */
+        if(move->currentCol - move->targetCol == 2){
+            board->squares[move->targetRow][move->targetCol + 1] = board->squares[move->targetRow][1];
+            board->squares[move->targetRow][1].pieceType = EMPTY;
+            board->squares[move->targetRow][1].color = NONE;
+        }
+    }
 }

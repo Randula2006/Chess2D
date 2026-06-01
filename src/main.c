@@ -79,6 +79,14 @@ int main(int argc, char* argv[]){
     state.enPassantRow = -1;
     state.enPassantCol = -1;
 
+    /* Casting criteria */
+    state.whiteKingMoved = 0;
+    state.blackKingMoved = 0;
+    state.whiteRookAMoved = 0;
+    state.whiteRookHMoved = 0;
+    state.blackRookAMoved = 0;
+    state.blackRookHMoved = 0;
+
     while(running == 1){
         while (SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){

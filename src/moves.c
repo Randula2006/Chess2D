@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include "../include/moves.h"
 #include "../include/board.h"
+#include "../include/input.h"
 
-
-void getMoves(Board * board, int row, int col, MoveList * list, int epRow, int epCol){
+void getMoves(Board * board, int row, int col, MoveList * list, int epRow, int epCol, int kingMoved, int rookAMoved, int rookHMoved){
     PieceColor color;
 
     list->count = 0;
     if(board->squares[row][col].pieceType == KING){
         KingMovement(board, list, row, col);
+        Castling(board, list, row, col, kingMoved, rookAMoved, rookHMoved);
     }else if (board->squares[row][col].pieceType == ROOK){
         RookMovement(board, list, row, col);
     }else if(board->squares[row][col].pieceType == BISHOP){
@@ -281,6 +282,64 @@ void PawnMovement(Board *board , MoveList * list, int row, int col, int epRow, i
     }
 }
 
+
+void Castling(Board * board, MoveList * list, int row, int col, int kingMoved, int rookAMoved, int rookHMoved){
+
+    if(kingMoved) return;
+    if(isInCheck(board, board->squares[row][col].color)) return;
+
+    if(board->squares[row][col].color == WHITE){
+        /* King side castling */
+        if(!rookHMoved &&
+           board->squares[8][6].pieceType == EMPTY &&
+           board->squares[8][7].pieceType == EMPTY &&
+           board->squares[8][8].pieceType == ROOK &&
+           board->squares[8][8].color == WHITE &&
+           !isSquareUnderAttack(board, 8, 6, WHITE) &&
+           !isSquareUnderAttack(board, 8, 7, WHITE)){
+            movePiece(board, list, row, col, 0, +2);
+        }
+
+        /* Queen side castling */
+        if(!rookAMoved &&
+           board->squares[8][4].pieceType == EMPTY &&
+           board->squares[8][3].pieceType == EMPTY &&
+           board->squares[8][2].pieceType == EMPTY &&
+           board->squares[8][1].pieceType == ROOK &&
+           board->squares[8][1].color == WHITE &&
+           !isSquareUnderAttack(board, 8, 4, WHITE) &&
+           !isSquareUnderAttack(board, 8, 3, WHITE)){
+            movePiece(board, list, row, col, 0, -2);
+        }
+    }
+
+    if(board->squares[row][col].color == BLACK){
+        /* King side castling */
+        if(!rookHMoved &&
+           board->squares[1][6].pieceType == EMPTY &&
+           board->squares[1][7].pieceType == EMPTY &&
+           board->squares[1][8].pieceType == ROOK &&
+           board->squares[1][8].color == BLACK &&
+           !isSquareUnderAttack(board, 1, 6, BLACK) &&
+           !isSquareUnderAttack(board, 1, 7, BLACK)){
+            movePiece(board, list, row, col, 0, +2);
+        }
+
+        /* Queen side castling */
+        if(!rookAMoved &&
+           board->squares[1][4].pieceType == EMPTY &&
+           board->squares[1][3].pieceType == EMPTY &&
+           board->squares[1][2].pieceType == EMPTY &&
+           board->squares[1][1].pieceType == ROOK &&
+           board->squares[1][1].color == BLACK &&
+           !isSquareUnderAttack(board, 1, 4, BLACK) &&
+           !isSquareUnderAttack(board, 1, 3, BLACK)){
+            movePiece(board, list, row, col, 0, -2);
+        }
+    }
+}
+
+
 void movePiece(Board * board, MoveList * list, int row, int col, int i, int j){
         list->moves[list->count].currentRow = row;
         list->moves[list->count].currentCol = col;
@@ -390,8 +449,51 @@ int hasAnyLegalMoves(Board * board, PieceColor color){
         for(c = 1; c < BOARD_SIZE; c++){
             if(board->squares[r][c].color == color){
                 list.count = 0;
-                getMoves(board, r, c, &list, -1, -1);
-                if(list.count > 0) return 1;
+                getMoves(board, r, c, &list, -1, -1, 0, 0, 0);
+                if (list.count > 0)
+                    return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int isSquareUnderAttack(Board * board, int row, int col, PieceColor color){
+    int i, j, k;
+    PieceColor enemy;
+    MoveList list;
+
+    if(color == WHITE){
+        enemy = BLACK;
+    }else{
+        enemy = WHITE;
+    }
+
+    for(i = 1; i < BOARD_SIZE; i++){
+        for(j = 1; j < BOARD_SIZE; j++){
+            if(board->squares[i][j].color == enemy){
+                list.count = 0;
+                if(board->squares[i][j].pieceType == KING){
+                    KingMovement(board, &list, i, j);
+                }else if(board->squares[i][j].pieceType == ROOK){
+                    RookMovement(board, &list, i, j);
+                }else if(board->squares[i][j].pieceType == BISHOP){
+                    BishopMovement(board, &list, i, j);
+                }else if(board->squares[i][j].pieceType == QUEEN){
+                    RookMovement(board, &list, i, j);
+                    BishopMovement(board, &list, i, j);
+                }else if(board->squares[i][j].pieceType == KNIGHT){
+                    KnightMovement(board, &list, i, j);
+                }else if(board->squares[i][j].pieceType == PAWN){
+                    PawnMovement(board, &list, i, j, -1, -1);
+                }
+
+                for(k = 0; k < list.count; k++){
+                    if(list.moves[k].targetRow == row &&
+                       list.moves[k].targetCol == col){
+                        return 1;
+                    }
+                }
             }
         }
     }
